@@ -21,7 +21,6 @@ const version = pkg.version;
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
-const overseer = require('../src/overseer');
 
 // CLI
 program
@@ -29,9 +28,7 @@ program
     .usage('[options] <file>')
     .option('-w, --watch', 'watch for file system changes')
     .option('-f, --forks <n>', 'amount of workers to fork')
-    .option('-P, --port <port>', 'port to listen to')
-    .option('-H, --hostname <hostname>', 'hostname to listen to')
-    .option('-E, --env <environment>', 'set environment')
+    .option('-e, --env <environment>', 'set environment')
     .option('--pidfile <file>', 'pidfile to use')
     .on('--help', function(){
         console.log('  Examples:');
@@ -41,22 +38,32 @@ program
     })
     .parse(process.argv);
 
-const ENV = program.env || (process.env["NODE_ENV"] || "development");
-const PORT = program.port || (process.env["PORT"] || 3000);
-const HOST = program.hostname || (process.env["HOSTNAME"] || "0.0.0.0");
-
-// Path
+// App file
 var appFile = program.args.shift();
 
+// Check if app file was passed
 if (!appFile) {
     console.error("Error: Missing file argument. -h for help");
     process.exit(0);
 }
 
+// Add .js extension if it's missing
+if (path.extname(appFile) === "") {
+    appFile += ".js";
+}
+
+// Resolve to a real path
 appFile = path.resolve(appFile);
+
+// Check if app file exists
 if (!fs.existsSync(appFile)) {
     console.error("Error: %s could not be found.", appFile);
     process.exit(0);
 }
 
-console.log(appfile);
+// Setup overseer and run
+require('../src/overseer')(appFile, {
+    env: program.env,
+    pidfile: program.pidfile,
+    watch: program.watch || false
+}).run();

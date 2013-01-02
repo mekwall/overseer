@@ -1,4 +1,5 @@
-const clr = require("cli-color");
+// Module dependencies
+const clc = require("cli-color");
 
 var logger = {};
 
@@ -40,7 +41,6 @@ logger.log = function () {
 logger.error = function () {
     this.timestamp();
     process.stdout.write(clc.red.bold(" error   "));
-    orgcon.error.apply(this, arguments);
     if (this._org && this._org.error) {
         this._org.error.apply(this, arguments);
     } else {
@@ -49,7 +49,6 @@ logger.error = function () {
 };
 
 logger.info = function () {
-    if (ENV !== "development") return;
     this.timestamp();
     process.stdout.write(clc.cyan(" info    "));
     if (this._org && this._org.warn) {
@@ -70,7 +69,6 @@ logger.warn = function () {
 };
 
 logger.debug = function () {
-    if (ENV !== "development") return;
     this.timestamp();
     process.stdout.write(clc.yellow.bold(" debug   "));
     if (this._org && this._org.log) {
