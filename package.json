@@ -1,0 +1,38 @@
+{
+  "name": "overseer",
+  "description": "",
+  "version": "0.1.0",
+  "authors": [
+    {
+      "name": "Marcus Ekwall",
+      "email": "marcus.ekwall@gmail.com",
+      "web": "http://www.writeless.se"
+    }
+  ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/mit-license.php"
+    }
+  ],
+  "bugs": {
+    "url": "git://github.com/mekwall/overseer/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mekwall/overseer.git"
+  },
+  "engines": {
+    "node": "~0.8.16"
+  },
+  "main": "index",
+  "bin": {
+    "overseer": "./bin/overseer"
+  },
+  "dependencies": {
+    "cli-color": "~0.2.1",
+    "keypress": "~0.1.0",
+    "commander": "~1.1.1",
+    "watch": "~0.5.1"
+  }
+}
