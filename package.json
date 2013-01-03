@@ -1,6 +1,9 @@
 {
-  "name": "overseer",
-  "description": "",
+  "name": "cluster-overseer",
+  "description": "An experimental cluster manager",
+  "keywords": [
+    "cluster", "forever", "workers", "watch"
+  ],
   "version": "0.1.0",
   "authors": [
     {

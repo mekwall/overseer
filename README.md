@@ -14,7 +14,7 @@ An experimental cluster manager for nodejs
 
 ## Installation
 
-    npm install -g overseer
+    npm install -g cluster-overseer
 
 ## Basic usage
 
