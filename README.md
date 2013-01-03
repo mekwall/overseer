@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mekwall/overseer.png)](https://travis-ci.org/mekwall/overseer)
+
 # overseer
 An experimental cluster manager for nodejs
 
