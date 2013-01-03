@@ -1,4 +1,4 @@
-Copyright (c) 2010-2012 Marcus Ekwall
+Copyright (c) 2010-2013 Marcus Ekwall
 
 The MIT License
 
