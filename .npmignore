@@ -1,6 +1,8 @@
 .git*
+.travis.yml
 docs/
-examples/
+build/
+example/
 support/
 test/
 testing.js
