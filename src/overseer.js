@@ -21,7 +21,7 @@ var overseer = Object.create(events.EventEmitter.prototype);
 var APPFILE = "./app.js";
 var PIDFILE = "./overseer.pid";
 var ENV = process.env["NODE_ENV"] || "development";
-var FORKS = require("os").cpus().length;
+var FORKS = 0 + require("os").cpus().length;
 var WATCH = false;
 var CMD = false;
 
@@ -53,13 +53,14 @@ overseer.fork = function () {
             switch (msg.type) {
 
                 case "uncaughtException":
+                    overseer.halt = true;
                     var err = msg.data;
                     err.stack = err.stack.replace(/\n/g, "\n\t");
                     console.error(clc.red.bold("W-%s: Uncaught Exception: %s\n\n\t"), pid, err.message, clc.red.bold(err.stack), "\n");
                     worker.destroy();
-                    setTimeout(function(){
-                        overseer.forkWorker();
-                    }, 5000);
+                    overseer.delayedFork(5000, function(){
+                        overseer.halt = false;
+                    });
                 break;
 
                 case "console":
@@ -69,6 +70,10 @@ overseer.fork = function () {
                         msg.data.unshift("W-" + pid + ": ");
                     }
                     console[msg.method].apply(console, msg.data);
+                break;
+
+                case "restart":
+                    overseer.restartWorkers();
                 break;
             }
         }
@@ -198,13 +203,32 @@ overseer.run = function() {
         overseer.workers.splice(overseer.workers.indexOf(worker), 1);
     });
 
-    console.info("Master: %s", "Setting up cluster...");
+    console.info("Master: Setting up cluster.");
+    console.info("Master: Forking %d workers...", FORKS);
 
     // Fork workers
     for (var i = 0; i < FORKS; i++) {
-        overseer.fork();
+        if (i === 0) {
+            overseer.fork();
+        } else {
+            // Fork the rest after 5s
+            overseer.delayedFork(5000);
+        }
     }
 };
+
+overseer.delayedFork = function (delay, cb) {
+    setTimeout(function(){
+        if (overseer.halt) {
+            overseer.delayedFork();
+        } else {
+            var fork = overseer.fork();
+            if (typeof cb === "function") {
+                cb(fork);
+            }
+        }
+    }, delay);
+}
 
 overseer._restartingWorkers = false;
 overseer.on("restartWorkers", function(cb) {
@@ -264,7 +288,7 @@ module.exports = function () {
         PIDFILE = options.pidfile;
     }
     if (options.forks) {
-        FORKS = options.forks;
+        FORKS = 0+options.forks;
     }
     if (options.watch) {
         WATCH = options.watch;

@@ -32,5 +32,27 @@ if (!cluster.isWorker) {
     process.exit(0);
 }
 
+process.on("message", function(msg){
+	if (msg.cmd) {
+		switch (msg.cmd) {
+			case "reload":
+				delete require.cache[msg.file];
+			break;
+
+			case "stat":
+				process.send("stat", {
+					uptime: process.uptime(),
+					memoryUsage: process.memoryUsage()
+				})
+			break;
+		}
+	}
+});
+
+// enable workers to ask for a cluster restart
+cluster.on("restart", function () {
+	process.send("restart");
+});
+
 var APPFILE = process.argv[2];
 module.exports = require(APPFILE);
