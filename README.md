@@ -26,7 +26,7 @@ The above will fork 4 workers running `app.js` in the current directory.
 
 ### Programmatic
 
-    require('overseer')('app.js', {
+    require('cluster-overseer')('app.js', {
         watch: true
     }).run();
     
