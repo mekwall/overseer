@@ -132,54 +132,14 @@ overseer.run = function() {
         }
     }
 
+    fs.writeFileSync(PIDFILE, process.pid);
+
     process.on("exit", function(){
         console.info("Master: Shutting down...");
         fs.unlinkSync(PIDFILE);
     });
 
-    fs.writeFileSync(PIDFILE, process.pid);
-
-    /**
-     * Graceful restart/shutdown
-     */
-    process.on("SIGHUP",function(){
-        console.info("Master: Received SIGHUP from system");
-        process.emit("restartWorkers");
-    });
-
-    process.on("SIGUSR2",function(){
-        console.info("Master: Received SIGUSR2 from system");
-        overseer.workers.forEach(function (worker) {
-            worker.send({ cmd: "stop" });
-        });
-    });
-
-    process.on("SIGTERM", function () {
-        console.info("Master: Received SIGTERM from system");
-        process.exit();
-    });
-
-    process.on("SIGINT", function () {
-        console.info("Master: Recieved SIGINT from system");
-        process.exit();
-    });
-
-    // Windows doesn't use POSIX signals
-    if (process.platform === "win32") {
-        const keypress = require("keypress");
-        keypress(process.stdin);
-        process.stdin.resume();
-        process.stdin.setRawMode(true);
-        process.stdin.setEncoding("utf8");
-        process.stdin.on("keypress", function(char, key) {
-            if (key && key.ctrl && key.name == "c") {
-                process.emit("SIGUSR2");
-                process.exit(0);
-            } else if (key && key.ctrl && key.name == "r") {
-                process.emit("SIGHUP");
-            }
-        });
-    }
+    require("./signals")(overseer);
 
     if (WATCH) {
         const watch = require("watch");
