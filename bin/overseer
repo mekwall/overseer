@@ -33,7 +33,7 @@ program
     .on('--help', function(){
         console.log('  Examples:');
         console.log('');
-        console.log('    $ overseer -w -P 61337 -H localhost -f 4 app.js');
+        console.log('    $ overseer -w -f 4 app.js');
         console.log('');
     })
     .parse(process.argv);
