@@ -33,25 +33,25 @@ if (!cluster.isWorker) {
 }
 
 process.on("message", function(msg){
-	if (msg.cmd) {
-		switch (msg.cmd) {
-			case "reload":
-				delete require.cache[msg.file];
-			break;
+    if (msg.cmd) {
+        switch (msg.cmd) {
+            case "reload":
+                delete require.cache[msg.file];
+            break;
 
-			case "stat":
-				process.send("stat", {
-					uptime: process.uptime(),
-					memoryUsage: process.memoryUsage()
-				})
-			break;
-		}
-	}
+            case "stat":
+                process.send("stat", {
+                    uptime: process.uptime(),
+                    memoryUsage: process.memoryUsage()
+                })
+            break;
+        }
+    }
 });
 
 // enable workers to ask for a cluster restart
 cluster.on("restart", function () {
-	process.send("restart");
+    process.send("restart");
 });
 
 var APPFILE = process.argv[2];

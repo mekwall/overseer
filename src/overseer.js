@@ -102,12 +102,23 @@ overseer.run = function() {
         console.log("Master: Overseer is already running.");
         return;
     };
+
     // Write out banner
     process.stdout.write(banner);
 
     // Save some references
     this.cluster = cluster;
     this.process = process;
+
+    // Make sure path of APPFILE is correct
+    if (APPFILE.substring(0, 2) === "./") {
+        APPFILE = path.join(process.cwd(), APPFILE);
+    }
+
+    // Make sure path of PIDFILE is correct
+    if (PIDFILE.substring(0, 2) === "./") {
+        PIDFILE = path.join(process.cwd(), PIDFILE);
+    }
 
     // Check if we have an existing pidfile
     if (fs.existsSync(PIDFILE)) {
@@ -154,8 +165,14 @@ overseer.run = function() {
         watch.createMonitor(watchPath, function (monitor) {
             console.info("Master: Watching for file system changes.");
             monitor.on("created", function (f, stat) {
+                if (!overseer._running || !overseer._restartingWorkers) {
+                    return;
+                }
             });
             monitor.on("changed", function (f, curr, prev) {
+                if (!overseer._running || !overseer._restartingWorkers) {
+                    return;
+                }
                 f = f.replace(watchPath, "");
                 f = f.replace(/\\/g, "/");
                 if (f[0] === "/") {
@@ -177,6 +194,9 @@ overseer.run = function() {
                 }
             });
             monitor.on("removed", function (f, stat) {
+                if (!overseer._running || !overseer._restartingWorkers) {
+                    return;
+                }
             });
         });
     }
@@ -202,19 +222,33 @@ overseer.run = function() {
         // Remove worker from container
         overseer.workers.splice(overseer.workers.indexOf(worker), 1);
     });
+    overseer.startCluster();
+};
 
+overseer.startCluster = function () {
     console.info("Master: Setting up cluster.");
     console.info("Master: Forking %d workers...", FORKS);
 
-    // Fork workers
-    for (var i = 0; i < FORKS; i++) {
-        if (i === 0) {
-            overseer.fork();
-        } else {
-            // Fork the rest after 5s
-            overseer.delayedFork(5000);
+    overseer._running = false;
+    // Fork first worker
+    var firstWorker = overseer.fork();
+    var firstRun = true;
+    firstWorker.once("listening", function () {
+        firstRun = false;
+        // Fork the rest once we know everything went ok
+        for (var i = 1; i < FORKS; i++) {
+            overseer.delayedFork(i*500);
         }
-    }
+        overseer._running = true;
+    });
+    firstWorker.once("disconnect", function () {
+        if (firstRun) {
+            console.error("Retrying in 5 seconds...");
+            setTimeout(function(){
+                overseer.startCluster();
+            }, 5000);
+        }
+    });
 };
 
 overseer.delayedFork = function (delay, cb) {
@@ -232,21 +266,36 @@ overseer.delayedFork = function (delay, cb) {
 
 overseer._restartingWorkers = false;
 overseer.on("restartWorkers", function(cb) {
-    console.info("Master: Restarting %s workers...", overseer.workers.length);
     if (overseer._restartingWorkers === true) {
         if (typeof cb === "function") {
             cb(false);
         }
         return false;
     }
-    var oldWorkers = overseer.workers.slice(0);
-    var len = len = oldWorkers.length;
-    for (var i = 0; i < len; i++) {
+    var len = overseer.workers.length;
+    var oldWorkers = [].concat(overseer.workers.slice(0));
+    console.info("Master: Restarting %s workers...", FORKS);
+
+    for (var i = 1; i < len; i++) {
         oldWorkers[i].on("exit", function(){
             var newWorker = overseer.fork();
             if (oldWorkers.length) {
+                newWorker.once("disconnect", function (msg) {
+                    overseer._restartingWorkers = false;
+                    console.log("Something went wrong!!");
+                    setTimeout(function(){
+                        overseer.emit("restartWorkers");
+                    }, 5000);
+                });
                 newWorker.once("listening", function(){
-                    oldWorkers.shift().destroy();
+                    var nextWorker = oldWorkers.shift();
+                    if (nextWorker) {
+                        nextWorker.destroy();
+                    } else if (len !== FORKS) {
+                        for (var i = 1; i < (FORKS-len); i++) {
+                            overseer.delayedFork(i*500);
+                        }
+                    }
                 });
             } else {
                 overseer._restartingWorkers = false;
@@ -256,6 +305,7 @@ overseer.on("restartWorkers", function(cb) {
             }
         });
     }
+
     oldWorkers.shift().destroy();
     overseer._restartingWorkers = true;
 });

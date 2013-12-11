@@ -2,7 +2,10 @@
   "name": "cluster-overseer",
   "description": "An experimental cluster manager",
   "keywords": [
-    "cluster", "forever", "workers", "watch"
+    "cluster",
+    "forever",
+    "workers",
+    "watch"
   ],
   "version": "0.1.1",
   "authors": [
@@ -26,16 +29,25 @@
     "url": "git://github.com/mekwall/overseer.git"
   },
   "engines": {
-    "node": "~0.8.16"
+    "node": ">= 0.8.16"
   },
   "main": "index",
   "bin": {
     "overseer": "./bin/overseer"
   },
   "dependencies": {
-    "cli-color": "~0.2.1",
-    "keypress": "~0.1.0",
-    "commander": "~1.1.1",
-    "watch": "~0.5.1"
-  }
+    "cli-color": "*",
+    "keypress": "*",
+    "commander": "*",
+    "watch": "*"
+  },
+  "readme": "[![Build Status](https://travis-ci.org/mekwall/overseer.png)](https://travis-ci.org/mekwall/overseer)\r\n\r\n# overseer\r\nAn experimental cluster manager for nodejs\r\n\r\n## Features\r\n\r\n* Automatic (re)forking of workers based on CPU cores\r\n* Graceful restart and shutdown of workers\r\n* Rolling restarts so there's no downtime\r\n* Unifying `console` output to master process\r\n* Beautiful logging to stdout that makes sense\r\n* Watch for file system changes and restart/inform workers\r\n\r\n## Installation\r\n\r\n    npm install -g cluster-overseer\r\n\r\n## Basic usage\r\n\r\n### CLI\r\n\r\n    overseer -f 4 app\r\n    \r\nThe above will fork 4 workers running `app.js` in the current directory.\r\n\r\n### Programmatic\r\n\r\n    require('cluster-overseer')('app.js', {\r\n        watch: true\r\n    }).run();\r\n    \r\nThe above will fork as many workers as there are CPU cores and restart/inform these on any file system changes.\r\n\r\n## Wishlist\r\n\r\n* Customizable file system watcher\r\n* Deeper wrapping (sandboxing?) of worker processes\r\n* Ability to override the port and host used when listening\r\n* Customizable logging\r\n* Alternative for `forever`\r\n* Script to run as deamon\r\n* Plugin system\r\n\r\n## License\r\n\r\nCopyright (c) 2010-2013 Marcus Ekwall\r\n\r\nThe MIT License\r\n\r\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the \"Software\"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\r\n\r\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\r\n\r\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\r\n",
+  "readmeFilename": "README.md",
+  "homepage": "https://github.com/mekwall/overseer",
+  "_id": "cluster-overseer@0.1.1",
+  "dist": {
+    "shasum": "25b59b94541684b671908b9ed2f3907f1f6004c6"
+  },
+  "_from": "cluster-overseer@",
+  "_resolved": "https://registry.npmjs.org/cluster-overseer/-/cluster-overseer-0.1.1.tgz"
 }

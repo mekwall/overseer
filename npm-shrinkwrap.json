@@ -1,34 +1,44 @@
 {
-  "name": "overseer",
-  "version": "0.1.0",
+  "name": "cluster-overseer",
+  "version": "0.1.1",
+  "from": "cluster-overseer@",
+  "resolved": "https://registry.npmjs.org/cluster-overseer/-/cluster-overseer-0.1.1.tgz",
   "dependencies": {
     "cli-color": {
       "version": "0.2.1",
+      "from": "cli-color@0.2.1",
       "dependencies": {
         "es5-ext": {
-          "version": "0.9.1"
+          "version": "0.9.1",
+          "from": "es5-ext@0.9.1"
         },
         "memoizee": {
           "version": "0.2.3",
+          "from": "memoizee@0.2.3",
           "dependencies": {
             "event-emitter": {
-              "version": "0.2.1"
+              "version": "0.2.1",
+              "from": "event-emitter@0.2.1"
             },
             "next-tick": {
-              "version": "0.1.0"
+              "version": "0.1.0",
+              "from": "next-tick@0.1.0"
             }
           }
         }
       }
     },
     "keypress": {
-      "version": "0.1.0"
+      "version": "0.1.0",
+      "from": "keypress@0.1.0"
     },
     "commander": {
-      "version": "1.1.1"
+      "version": "1.1.1",
+      "from": "commander@1.1.1"
     },
     "watch": {
-      "version": "0.5.1"
+      "version": "0.5.1",
+      "from": "watch@0.5.1"
     }
   }
 }
