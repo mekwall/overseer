@@ -1,8 +1,6 @@
 {
   "name": "cluster-overseer",
-  "version": "0.1.1",
-  "from": "cluster-overseer@",
-  "resolved": "https://registry.npmjs.org/cluster-overseer/-/cluster-overseer-0.1.1.tgz",
+  "version": "0.1.2",
   "dependencies": {
     "cli-color": {
       "version": "0.2.1",
