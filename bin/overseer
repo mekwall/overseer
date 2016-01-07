@@ -63,6 +63,7 @@ if (!fs.existsSync(appFile)) {
 
 // Setup overseer and run
 require('../src/overseer')(appFile, {
+    forks: program.forks,
     env: program.env,
     pidfile: program.pidfile,
     watch: program.watch || false
